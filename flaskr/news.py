@@ -8,7 +8,7 @@ from flaskr.auth import login_required
 
 from flaskr.db import get_db
 
-from flaskr.db_manager import mapped_news
+from flaskr.db_manager import get_news, mapped_news
 
 bp = Blueprint('news', __name__, url_prefix='/news')
 
@@ -16,7 +16,7 @@ bp = Blueprint('news', __name__, url_prefix='/news')
 @login_required
 def list():
     db = get_db()
-    todays_news = mapped_news(db)
+    todays_news = get_news(db)
 
     try:
         if not todays_news:
@@ -38,7 +38,7 @@ def list():
                                 )
                         db.commit()
                     
-                todays_news = mapped_news(db)
+                todays_news = get_news(db)
 
     except:
         todays_news = []
