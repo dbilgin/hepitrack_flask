@@ -70,13 +70,27 @@ def login():
 
 @bp.before_app_request
 def load_logged_in_user():
-    user_token = request.headers.get('Authorization')
+    auth_header = request.headers.get('Authorization')
+    user_token = read_authorization(auth_header)
+
     if user_token is None:
         g.user = None
     else:
         g.user = get_db().execute(
                 'SELECT * FROM user WHERE access_token = ?', (user_token,)
                 ).fetchone()
+        
+    print('AUTH: ' + str(user_token))
+
+def read_authorization(auth_header):
+    user_token = None
+
+    if auth_header:
+        split_header = auth_header.split(' ')
+        if len(split_header) > 1:
+            user_token = split_header[1]
+            
+    return user_token
 
 def login_required(view):
     @functools.wraps(view)

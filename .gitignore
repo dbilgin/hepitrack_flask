@@ -13,6 +13,4 @@ dist/
 build/
 *.egg-info/
 
-settings.cfg
-
 *.swp
