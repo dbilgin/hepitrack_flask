@@ -20,6 +20,8 @@ bp = Blueprint('auth', __name__, url_prefix='/auth')
 @bp.route('/register', methods=['POST'])
 def register():
     content=request.get_json()
+    if not content:
+        abort(400)
     try:
         email = content['email']
         password = content['password']
@@ -47,6 +49,8 @@ def register():
 @bp.route('/login', methods=['POST'])
 def login():
     content=request.get_json()
+    if not content:
+        abort(400)
     try:
         email = content['email']
         password = content['password']

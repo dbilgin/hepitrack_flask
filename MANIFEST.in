@@ -1,0 +1,3 @@
+include flaskr/schema.sql
+include instance/settings.cfg
+global-exclude *.pyc
