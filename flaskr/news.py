@@ -2,13 +2,13 @@ import requests
 
 import json
 from flask import Blueprint, g, current_app, jsonify
-from flaskr.auth import login_required
+from flaskr.auth import generic_login_required
 from flaskr.db_manager import get_news, insert_news_article
 
 bp = Blueprint('news', __name__, url_prefix='/news')
 
 @bp.route('/list', methods=['GET'])
-@login_required
+@generic_login_required
 def list():
     todays_news = get_news()
 

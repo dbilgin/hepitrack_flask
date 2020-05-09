@@ -3,8 +3,7 @@ from flaskr.db import get_db
 # News
 def get_news():
     return get_db().execute(
-        "SELECT * FROM news "
-        + "WHERE publish_date > date('now', '-1 days') LIMIT 10"
+        "SELECT * FROM news WHERE publish_date > date('now', '-1 days') LIMIT 10"
     ).fetchall()
 
 def insert_news_article(article):
