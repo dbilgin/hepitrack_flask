@@ -39,7 +39,7 @@ def register():
             and password is not None
             and get_user_by_email(email) is None
         ):
-        token = sha256_crypt.hash(email + password + str(time.time_ns()))
+        token = sha256_crypt.hash(email + password + str(time.time()))
         insert_user(email, generate_password_hash(password), token)
         
         return jsonify(access_token=token)
@@ -67,7 +67,7 @@ def login():
     if user is None or not check_password_hash(user['password'], password):
         abort(401)
     else:
-        token = sha256_crypt.hash(email + password + str(time.time_ns()))
+        token = sha256_crypt.hash(email + password + str(time.time()))
         update_user_token(token, user['id'])
         return jsonify(access_token=token)
 
