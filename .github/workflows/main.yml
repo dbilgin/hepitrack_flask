@@ -16,11 +16,21 @@ jobs:
           python-version: '3.6'
 
       - name: Install the dependencies
-        run: pip install -r requirements.txt
-      
+        run: |
+          pip install wheel
+          pip install -r requirements.txt
+
+      - name: Create test settings
+        run: |
+          mkdir instance
+          cd instance
+          echo 'SECRET_KEY="test"' >> settings.cfg
+          echo 'NEWS_API_KEY="test"' >> settings.cfg
+          echo 'API_KEY="test"' >> settings.cfg
+
       - name: Set up SQL
         run: flask init-db
-    
+
       - name: Run the tests
         run: |
           coverage run -m pytest
