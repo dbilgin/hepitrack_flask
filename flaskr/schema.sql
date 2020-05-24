@@ -6,6 +6,8 @@ CREATE TABLE user (
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL,
 	access_token TEXT NOT NULL,
+  color TEXT,
+  verification_token TEXT,
 	verified INTEGER DEFAULT 0
 );
 

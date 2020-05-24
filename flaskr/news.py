@@ -1,6 +1,5 @@
-import requests
+import requests, json
 
-import json
 from flask import Blueprint, g, current_app, jsonify
 from flaskr.auth import generic_login_required
 from flaskr.db_manager import get_news, insert_news_article

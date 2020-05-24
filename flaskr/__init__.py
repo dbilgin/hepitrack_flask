@@ -7,7 +7,7 @@ from flaskr.db import get_db
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
-    
+
     app.config.from_mapping(
             DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
             )
@@ -34,12 +34,14 @@ def create_app(test_config=None):
     @app.route('/')
     def hepitrack():
         return 'Welcome to Hepitrack'
-    
+
     from . import db
     db.init_app(app)
     from . import auth
     app.register_blueprint(auth.bp)
     from . import news
     app.register_blueprint(news.bp)
-    
+    from . import user
+    app.register_blueprint(user.bp)
+
     return app

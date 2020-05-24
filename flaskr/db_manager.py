@@ -10,9 +10,9 @@ def get_news():
 def insert_news_article(article):
     db = get_db()
     db.execute(
-        "INSERT INTO news "
-        + "(source, author, title, description, url, image, publish_date) "
-        + "VALUES (?, ?, ?, ?, ?, ?, ?)",
+        'INSERT INTO news '
+        + '(source, author, title, description, url, image, publish_date) '
+        + 'VALUES (?, ?, ?, ?, ?, ?, ?)',
         (
             article['source']['name'],
             article['author'],
@@ -40,11 +40,12 @@ def get_user_by_token(access_token):
         (access_token,)
     ).fetchone()
 
-def insert_user(email, password_hash, token):
+def insert_user(email, password_hash, token, verification_token):
     db = get_db()
     db.execute(
-        'INSERT INTO user (email, password, access_token) VALUES (?, ?, ?)',
-        (email, password_hash, token)
+        'INSERT INTO user (email, password, access_token, verification_token)'
+        + 'VALUES (?, ?, ?, ?)',
+        (email, password_hash, token, verification_token)
     )
     db.commit()
 
@@ -55,3 +56,31 @@ def update_user_token(token, id):
         (token, id)
     )
     db.commit()
+
+def verify_user(verification_token):
+    db = get_db()
+    update_result = db.execute(
+      'UPDATE user set verified = 1 '
+      + 'WHERE verification_token = ?',
+      (verification_token,)
+    )
+    db.commit()
+
+    if update_result.rowcount > 0:
+      update_result = db.execute(
+        'UPDATE user set verification_token = NULL '
+        + 'WHERE verification_token = ?',
+        (verification_token,)
+      )
+      db.commit()
+
+      return update_result.rowcount
+    else:
+      return 0
+
+def user_data(user_id):
+    db = get_db()
+    return db.execute(
+        'SELECT email, color, verified FROM user WHERE id = ?',
+        (user_id,)
+    ).fetchone()

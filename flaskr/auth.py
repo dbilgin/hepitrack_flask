@@ -1,19 +1,21 @@
-import functools
-import time
-import re
+import functools, time, re
 
 from flask import (
-    Blueprint, flash, g, request, session, abort, jsonify, current_app
+  Blueprint, flash, g, request, session, abort, jsonify, current_app
 )
 from werkzeug.security import check_password_hash, generate_password_hash
-from flaskr.db import get_db
 from passlib.hash import sha256_crypt
-
-from flaskr.db_manager import (
-        get_user_by_email, get_user_by_token, insert_user, update_user_token
-)
-
 from marshmallow import Schema, fields, ValidationError, validate
+
+from flaskr.db import get_db
+from flaskr.db_manager import (
+  get_user_by_email,
+  get_user_by_token,
+  insert_user,
+  update_user_token,
+  verify_user
+)
+from flaskr.email import send_email, email_verification_data
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -40,8 +42,16 @@ def register():
             and get_user_by_email(email) is None
         ):
         token = sha256_crypt.hash(email + password + str(time.time()))
-        insert_user(email, generate_password_hash(password), token)
-        
+        verification_token = sha256_crypt.hash(str(time.time()))
+        insert_user(
+          email,
+          generate_password_hash(password),
+          token,
+          verification_token
+        )
+
+        send_email(email, email_verification_data(verification_token))
+
         return jsonify(access_token=token)
     else:
         abort(409)
@@ -56,7 +66,7 @@ def login():
         password = content['password']
 
         UserSchema().load(
-            {'email': email, 'password': password}
+                {'email': email, 'password': password}
         )
     except KeyError:
         abort(400)
@@ -71,6 +81,22 @@ def login():
         update_user_token(token, user['id'])
         return jsonify(access_token=token)
 
+@bp.route('/verify_email', methods=['POST'])
+def verify_email():
+    content=request.get_json()
+    if not content:
+        abort(400)
+    try:
+        verification_token = content['verification_token']
+    except:
+        abort(400)
+
+    if verify_user(verification_token) == 0:
+      abort(401)
+    else:
+      return ('', 204)
+
+
 @bp.before_app_request
 def load_logged_in_user():
     auth_header = request.headers.get('Authorization')
@@ -78,7 +104,7 @@ def load_logged_in_user():
 
     g.user = None
     g.generic_request = False
-    
+
     if user_token is not None:
         g.user = get_user_by_token(user_token)
         if user_token == current_app.config['API_KEY']:
@@ -91,7 +117,7 @@ def read_authorization_header(auth_header):
         split_header = auth_header.split(' ')
         if len(split_header) > 1:
             user_token = split_header[1]
-            
+
     return user_token
 
 def login_required(view):
