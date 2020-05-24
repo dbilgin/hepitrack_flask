@@ -7,7 +7,9 @@ from email.utils import formataddr
 from flask import current_app, jsonify
 
 def send_email(email, data):
-    print(str(data))
+    if email == 'test@hepitrack.com':
+      return
+
     email_to = email
     email_from = current_app.config['SMTP_USER']
 

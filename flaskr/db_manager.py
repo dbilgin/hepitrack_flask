@@ -1,4 +1,5 @@
 from flaskr.db import get_db
+from flask import g
 
 # News
 def get_news():
@@ -52,8 +53,49 @@ def insert_user(email, password_hash, token, verification_token):
 def update_user_token(token, id):
     db = get_db()
     db.execute(
-        'UPDATE user Set access_token = ? WHERE id = ?',
+        'UPDATE user SET access_token = ? WHERE id = ?',
         (token, id)
+    )
+    db.commit()
+
+def update_verification_token(verification_token):
+    db = get_db()
+    result = db.execute(
+        'UPDATE user SET verification_token = ? WHERE id = ? AND verified = 0',
+        (verification_token, g.user['id'])
+    )
+    db.commit()
+
+    return result
+
+def check_user_count_by_email(email):
+    db = get_db()
+    result = db.execute(
+        'SELECT COUNT(*) as count FROM user WHERE email = ?',
+        (email,)
+    ).fetchone()['count']
+
+    return result
+
+def update_user_token_and_pass(token, password):
+    db = get_db()
+    db.execute(
+        'UPDATE user SET access_token = ?, password = ? WHERE id = ?',
+        (token, password, g.user['id'])
+    )
+    db.commit()
+
+def update_email(new_email, token, verification_token):
+    db = get_db()
+    db.execute(
+        '''UPDATE user SET
+        email = ?,
+        access_token = ?,
+        verification_token = ?,
+        verified = 0
+        WHERE id = ?''',
+
+        (new_email, token, verification_token, g.user['id'])
     )
     db.commit()
 
