@@ -11,4 +11,4 @@ def test_list(client, app):
             headers={'Authorization': 'token ' + app.config['API_KEY']}
     )
     assert 200 == response.status_code
-    assert b'author' in response.data
+    assert b'title' in response.data
