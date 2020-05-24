@@ -21,28 +21,28 @@ from flaskr.db_manager import (
 )
 from flaskr.email import send_email, email_verification_data
 
-bp = Blueprint('auth', __name__, url_prefix='/auth')
+bp=Blueprint('auth', __name__, url_prefix='/auth')
 
 @bp.before_app_request
 def load_logged_in_user():
-    auth_header = request.headers.get('Authorization')
-    user_token = read_authorization_header(auth_header)
+    auth_header=request.headers.get('Authorization')
+    user_token=read_authorization_header(auth_header)
 
-    g.user = None
-    g.generic_request = False
+    g.user=None
+    g.generic_request=False
 
     if user_token is not None:
-        g.user = get_user_by_token(user_token)
-        if user_token == current_app.config['API_KEY']:
-            g.generic_request = True
+        g.user=get_user_by_token(user_token)
+        if user_token==current_app.config['API_KEY']:
+            g.generic_request=True
 
 def read_authorization_header(auth_header):
-    user_token = None
+    user_token=None
 
     if auth_header:
-        split_header = auth_header.split(' ')
+        split_header=auth_header.split(' ')
         if len(split_header) > 1:
-            user_token = split_header[1]
+            user_token=split_header[1]
 
     return user_token
 
@@ -57,23 +57,23 @@ def login_required(view):
 def generic_login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
-        if g.generic_request != True:
+        if g.generic_request !=True:
             abort(401)
         return view(**kwargs)
     return wrapped_view
 
 class UserSchema(Schema):
-    email = fields.Email()
-    password = fields.Str(validate=validate.Length(min=6))
+    email=fields.Email()
+    password=fields.Str(validate=validate.Length(min=6))
 
 @bp.route('/register', methods=['POST'])
 def register():
-    content = request.get_json()
+    content=request.get_json()
     if not content:
         abort(400)
     try:
-        email = content['email']
-        password = content['password']
+        email=content['email']
+        password=content['password']
 
         UserSchema().load(
             {'email': email, 'password': password}
@@ -88,8 +88,8 @@ def register():
             and password is not None
             and get_user_by_email(email) is None
         ):
-        token = sha256_crypt.hash(email + password + str(time.time()))
-        verification_token = sha256_crypt.hash(str(time.time()))
+        token=sha256_crypt.hash(email + password + str(time.time()))
+        verification_token=sha256_crypt.hash(str(time.time()))
         insert_user(
           email,
           generate_password_hash(password),
@@ -99,18 +99,18 @@ def register():
 
         send_email(email, email_verification_data(verification_token))
 
-        return jsonify(access_token = token)
+        return jsonify(access_token=token)
     else:
         abort(409)
 
 @bp.route('/login', methods=['POST'])
 def login():
-    content = request.get_json()
+    content=request.get_json()
     if not content:
         abort(400)
     try:
-        email = content['email']
-        password = content['password']
+        email=content['email']
+        password=content['password']
 
         UserSchema().load(
                 {'email': email, 'password': password}
@@ -120,25 +120,25 @@ def login():
     except ValidationError as validation_error:
         abort(400, validation_error.messages)
 
-    user = get_user_by_email(email)
+    user=get_user_by_email(email)
     if user is None or not check_password_hash(user['password'], password):
         abort(401)
     else:
-        token = sha256_crypt.hash(email + password + str(time.time()))
+        token=sha256_crypt.hash(email + password + str(time.time()))
         update_user_token(token, user['id'])
-        return jsonify(access_token = token)
+        return jsonify(access_token=token)
 
-@bp.route('/verify_email', methods = ['POST'])
+@bp.route('/verify_email', methods=['POST'])
 def verify_email():
-    content = request.get_json()
+    content=request.get_json()
     if not content:
         abort(400)
     try:
-        verification_token = content['verification_token']
+        verification_token=content['verification_token']
     except:
         abort(400)
 
-    if verify_user(verification_token) == 0:
+    if verify_user(verification_token)==0:
       abort(401)
     else:
       return ('', 204)
@@ -146,12 +146,12 @@ def verify_email():
 @bp.route('/change_password', methods=['POST'])
 @login_required
 def change_password():
-    content = request.get_json()
+    content=request.get_json()
     if not content:
         abort(400)
     try:
-        old_password = content['old_password']
-        new_password = content['new_password']
+        old_password=content['old_password']
+        new_password=content['new_password']
 
         UserSchema().load(
                 {'password': new_password}
@@ -162,12 +162,12 @@ def change_password():
         abort(400, validation_error.messages)
 
     if check_password_hash(g.user['password'], old_password):
-      token = sha256_crypt.hash(g.user['email']
+      token=sha256_crypt.hash(g.user['email']
         + new_password
         + str(time.time()))
       update_user_token_and_pass(token, new_password)
 
-      return jsonify(access_token = token)
+      return jsonify(access_token=token)
     else:
         abort(401)
 
@@ -178,7 +178,7 @@ def change_email():
     if not content:
         abort(400)
     try:
-        new_email = content['new_email']
+        new_email=content['new_email']
         UserSchema().load(
             {'email': new_email}
         )
@@ -190,23 +190,23 @@ def change_email():
     if check_user_count_by_email(new_email) > 0:
       abort(409)
 
-    token = sha256_crypt.hash(
+    token=sha256_crypt.hash(
       new_email
       + g.user['password']
       + str(time.time())
     )
-    verification_token = sha256_crypt.hash(str(time.time()))
+    verification_token=sha256_crypt.hash(str(time.time()))
     update_email(new_email, token, verification_token)
 
     send_email(new_email, email_verification_data(verification_token))
 
-    return jsonify(access_token = token)
+    return jsonify(access_token=token)
 
 @bp.route('/resend_verification', methods=['GET'])
 @login_required
 def resend_verification():
-    verification_token = sha256_crypt.hash(str(time.time()))
-    db_result = update_verification_token(verification_token)
+    verification_token=sha256_crypt.hash(str(time.time()))
+    db_result=update_verification_token(verification_token)
 
     if db_result.rowcount > 0:
       send_email(g.user['email'], email_verification_data(verification_token))

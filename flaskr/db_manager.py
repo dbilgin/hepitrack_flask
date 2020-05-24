@@ -9,7 +9,7 @@ def get_news():
     ).fetchall()
 
 def insert_news_article(article):
-    db = get_db()
+    db=get_db()
     db.execute(
         'INSERT INTO news '
         + '(source, author, title, description, url, image, publish_date) '
@@ -28,21 +28,21 @@ def insert_news_article(article):
 
 # User
 def get_user_by_email(email):
-    db = get_db()
+    db=get_db()
     return db.execute(
-        'SELECT * FROM user WHERE email = ?',
+        'SELECT * FROM user WHERE email=?',
         (email,)
     ).fetchone()
 
 def get_user_by_token(access_token):
-    db = get_db()
+    db=get_db()
     return db.execute(
-        'SELECT * FROM user WHERE access_token = ?',
+        'SELECT * FROM user WHERE access_token=?',
         (access_token,)
     ).fetchone()
 
 def insert_user(email, password_hash, token, verification_token):
-    db = get_db()
+    db=get_db()
     db.execute(
         'INSERT INTO user (email, password, access_token, verification_token)'
         + 'VALUES (?, ?, ?, ?)',
@@ -51,17 +51,17 @@ def insert_user(email, password_hash, token, verification_token):
     db.commit()
 
 def update_user_token(token, id):
-    db = get_db()
+    db=get_db()
     db.execute(
-        'UPDATE user SET access_token = ? WHERE id = ?',
+        'UPDATE user SET access_token=? WHERE id=?',
         (token, id)
     )
     db.commit()
 
 def update_verification_token(verification_token):
-    db = get_db()
-    result = db.execute(
-        'UPDATE user SET verification_token = ? WHERE id = ? AND verified = 0',
+    db=get_db()
+    result=db.execute(
+        'UPDATE user SET verification_token=? WHERE id=? AND verified=0',
         (verification_token, g.user['id'])
     )
     db.commit()
@@ -69,49 +69,49 @@ def update_verification_token(verification_token):
     return result
 
 def check_user_count_by_email(email):
-    db = get_db()
-    result = db.execute(
-        'SELECT COUNT(*) as count FROM user WHERE email = ?',
+    db=get_db()
+    result=db.execute(
+        'SELECT COUNT(*) as count FROM user WHERE email=?',
         (email,)
     ).fetchone()['count']
 
     return result
 
 def update_user_token_and_pass(token, password):
-    db = get_db()
+    db=get_db()
     db.execute(
-        'UPDATE user SET access_token = ?, password = ? WHERE id = ?',
+        'UPDATE user SET access_token=?, password=? WHERE id=?',
         (token, password, g.user['id'])
     )
     db.commit()
 
 def update_email(new_email, token, verification_token):
-    db = get_db()
+    db=get_db()
     db.execute(
         '''UPDATE user SET
-        email = ?,
-        access_token = ?,
-        verification_token = ?,
-        verified = 0
-        WHERE id = ?''',
+        email=?,
+        access_token=?,
+        verification_token=?,
+        verified=0
+        WHERE id=?''',
 
         (new_email, token, verification_token, g.user['id'])
     )
     db.commit()
 
 def verify_user(verification_token):
-    db = get_db()
-    update_result = db.execute(
-      'UPDATE user set verified = 1 '
-      + 'WHERE verification_token = ?',
+    db=get_db()
+    update_result=db.execute(
+      'UPDATE user set verified=1 '
+      + 'WHERE verification_token=?',
       (verification_token,)
     )
     db.commit()
 
     if update_result.rowcount > 0:
-      update_result = db.execute(
-        'UPDATE user set verification_token = NULL '
-        + 'WHERE verification_token = ?',
+      update_result=db.execute(
+        'UPDATE user set verification_token=NULL '
+        + 'WHERE verification_token=?',
         (verification_token,)
       )
       db.commit()
@@ -121,8 +121,19 @@ def verify_user(verification_token):
       return 0
 
 def user_data(user_id):
-    db = get_db()
+    db=get_db()
     return db.execute(
-        'SELECT email, color, verified FROM user WHERE id = ?',
+        'SELECT email, color, verified FROM user WHERE id=?',
         (user_id,)
     ).fetchone()
+
+def update_color(color):
+    db=get_db()
+    db.execute(
+        '''UPDATE user SET
+        color=?
+        WHERE id=?''',
+
+        (color, g.user['id'])
+    )
+    db.commit()
