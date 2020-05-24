@@ -12,6 +12,6 @@ def test_user_data(client, auth, app):
             }
         )
         assert change_response.status_code == 200
+        assert b'email' in change_response.data
         assert b'verified' in change_response.data
         assert b'color' in change_response.data
-        assert b'email' in change_response.data
