@@ -1,0 +1,27 @@
+name: run tests
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run_unit_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Install the dependencies
+        run: pip install -r requirements.txt
+      
+      - name: Set up SQL
+        run: flask init-db
+    
+      - name: Run the tests
+        run: |
+          coverage run -m pytest
+          coverage report
