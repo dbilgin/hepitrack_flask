@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  run_unit_tests:
+  run_tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
@@ -28,8 +28,13 @@ jobs:
           echo 'NEWS_API_KEY="test"' >> settings.cfg
           echo 'API_KEY="test"' >> settings.cfg
 
-      - name: Set up SQL
+      - name: Set-up SQL
         run: flask init-db
+
+      - name: Set-up flask
+        run: |
+          export FLASK_APP=flaskr
+          export FLASK_ENV=development
 
       - name: Run the tests
         run: |
