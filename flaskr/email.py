@@ -39,7 +39,7 @@ def email_verification_data(verification_token):
       <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
       <div>You can verify your email address following the link below:</div>
       <div>
-        <a href="https://www.hepitrack.com/verify-email?code=""" + verification_token + """">https://www.hepitrack.com/verify-email?code=""" + verification_token + """</a>
+        <a href="https://www.hepitrack.com/verify-email.html?code=""" + verification_token + """">https://www.hepitrack.com/verify-email?code=""" + verification_token + """</a>
       </div>
       <div>Thanks for registering with Hepitrack!</<div>
     """
