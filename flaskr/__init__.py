@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, g
 from flaskr.db import get_db
+from flask_cors import CORS
 
 def create_app(test_config=None):
     app=Flask(__name__, instance_relative_config=True)
@@ -41,4 +42,5 @@ def create_app(test_config=None):
     from . import user
     app.register_blueprint(user.bp)
 
+    CORS(app, resources={r'/*': {'origins': 'https://www.hepitrack.com'}})
     return app
