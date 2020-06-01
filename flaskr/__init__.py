@@ -1,9 +1,6 @@
 import os
-
 from flask import Flask, request, g
-
 from flaskr.db import get_db
-
 
 def create_app(test_config=None):
     app=Flask(__name__, instance_relative_config=True)

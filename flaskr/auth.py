@@ -20,6 +20,7 @@ from flaskr.db_manager import (
   check_user_count_by_email
 )
 from flaskr.email import send_email, email_verification_data
+from flask_cors import cross_origin
 
 bp=Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -129,6 +130,7 @@ def login():
         return jsonify(access_token=token)
 
 @bp.route('/verify_email', methods=['POST'])
+@cross_origin(['https://www.hepitrack.com'])
 def verify_email():
     content=request.get_json()
     if not content:
