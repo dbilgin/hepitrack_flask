@@ -22,9 +22,10 @@ def patch_color():
     try:
         color=content['color']
 
-        ColorSchema().load(
-            {'color': color}
-        )
+        if color:
+            ColorSchema().load(
+                {'color': color}
+            )
     except ValidationError as validation_error:
         abort(400, validation_error.messages)
     except:

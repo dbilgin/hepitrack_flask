@@ -47,3 +47,18 @@ def email_verification_data(verification_token):
       'subject': subject,
       'message': message
     }
+
+def email_reset_password(verification_token):
+    subject='Email Verification'
+    message="""\
+      <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
+      <div>Click the link below to reset your password:</div>
+      <div>
+        <a href="https://www.hepitrack.com/reset-password.html?code=""" + verification_token + """">https://www.hepitrack.com/reset-password.html?code=""" + verification_token + """</a>
+      </div>
+      <div>Thanks for using Hepitrack!</<div>
+    """
+    return {
+      'subject': subject,
+      'message': message
+    }

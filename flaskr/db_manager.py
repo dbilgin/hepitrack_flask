@@ -68,6 +68,16 @@ def update_verification_token(verification_token):
 
     return result
 
+def update_verification_token_by_email(verification_token, email):
+    db=get_db()
+    result=db.execute(
+        'UPDATE user SET verification_token=? WHERE email=?',
+        (verification_token, email)
+    )
+    db.commit()
+
+    return result
+
 def check_user_count_by_email(email):
     db=get_db()
     result=db.execute(
@@ -137,3 +147,33 @@ def update_color(color):
         (color, g.user['id'])
     )
     db.commit()
+
+def delete_user():
+    db=get_db()
+    db.execute(
+        '''UPDATE user set email='deleted', verification_token=NULL
+        WHERE id=?''',
+
+        (g.user['id'],)
+    )
+    db.commit()
+
+def log_out_user():
+    db=get_db()
+    db.execute(
+        '''UPDATE user set verification_token=NULL
+        WHERE id=?''',
+
+        (g.user['id'],)
+    )
+    db.commit()
+
+def update_user_pass_by_verify_token(password, token):
+    db=get_db()
+    db_result=db.execute(
+        'UPDATE user SET password=? WHERE verification_token=?',
+        (password, token)
+    )
+    db.commit()
+
+    return db_result

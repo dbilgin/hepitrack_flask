@@ -17,10 +17,19 @@ from flaskr.db_manager import (
   update_user_token_and_pass,
   update_email,
   update_verification_token,
-  check_user_count_by_email
+  check_user_count_by_email,
+  delete_user,
+  log_out_user,
+  update_user_pass_by_verify_token,
+  update_verification_token_by_email
 )
-from flaskr.email import send_email, email_verification_data
+from flaskr.email import (
+    send_email,
+    email_verification_data,
+    email_reset_password
+)
 from flask_cors import cross_origin
+from random import randint
 
 bp=Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -127,7 +136,7 @@ def login():
     else:
         token=sha256_crypt.hash(email + password + str(time.time()))
         update_user_token(token, user['id'])
-        return jsonify(access_token=token)
+        return jsonify(access_token=token,verified=user['verified'])
 
 @bp.route('/verify_email', methods=['POST'])
 @cross_origin(['https://www.hepitrack.com'])
@@ -163,11 +172,14 @@ def change_password():
     except ValidationError as validation_error:
         abort(400, validation_error.messages)
 
-    if check_password_hash(g.user['password'], old_password):
+    if (
+            check_password_hash(g.user['password'], old_password)
+            and g.user['verified'] == 1
+        ):
       token=sha256_crypt.hash(g.user['email']
         + new_password
         + str(time.time()))
-      update_user_token_and_pass(token, new_password)
+      update_user_token_and_pass(token, generate_password_hash(new_password))
 
       return jsonify(access_token=token)
     else:
@@ -190,7 +202,10 @@ def change_email():
         abort(400, validation_error.messages)
 
     if check_user_count_by_email(new_email) > 0:
-      abort(409)
+        abort(409)
+
+    if g.user['verified'] != 1:
+        abort(401)
 
     token=sha256_crypt.hash(
       new_email
@@ -216,3 +231,61 @@ def resend_verification():
       abort(400)
 
     return ('', 204)
+
+@bp.route('/delete_account', methods=['DELETE'])
+@login_required
+def delete_account():
+    try:
+        delete_user()
+    except:
+        abort(400)
+
+    return ('', 204)
+
+@bp.route('/log_out', methods=['GET'])
+@login_required
+def log_out():
+    try:
+        log_out_user()
+    except:
+        abort(400)
+
+    return ('', 204)
+
+@bp.route('/reset_password_request', methods=['POST'])
+def reset_password_request():
+    content=request.get_json()
+    if not content:
+        abort(400)
+    try:
+        user_email=content['email']
+    except:
+        abort(400)
+
+    verification_token=sha256_crypt.hash(str(time.time()))
+    db_result=update_verification_token_by_email(verification_token, user_email)
+
+    if db_result.rowcount > 0:
+      send_email(user_email, email_reset_password(verification_token))
+    else:
+      abort(400)
+
+    return ('', 204)
+
+@bp.route('/reset_password', methods=['POST'])
+def reset_password():
+    content=request.get_json()
+    if not content:
+        abort(400)
+    try:
+        verification_token=content['verification_token']
+    except:
+        abort(400)
+
+    new_password=randint(10**(6-1), (10**6)-1)
+    db_result=update_user_pass_by_verify_token(new_password, verification_token)
+
+    if db_result.rowcount > 0:
+        return ('', 204)
+    else:
+        abort(401)
