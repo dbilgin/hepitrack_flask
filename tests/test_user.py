@@ -20,7 +20,7 @@ def test_user_data(client, auth, app):
 @pytest.mark.parametrize(('color', 'code'), (
     ('#FFFFFF', 204),
     ('#FFFFF', 400),
-    (None, 400),
+    (None, 204),
     ('#FFF', 204),
 ))
 def test_color_patch(client, auth, app, color, code):
