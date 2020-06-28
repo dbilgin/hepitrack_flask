@@ -45,16 +45,29 @@ class AuthActions(object):
     def login(self, email='test@hepitrack.com', password='test123456'):
         return self._client.post(
             '/auth/login',
-            data=json.dumps(dict(email='test@hepitrack.com', password='test123456')),
+            data=json.dumps(
+                dict(
+                    email='test@hepitrack.com', password='test123456'
+                )
+            ),
             content_type='application/json'
         )
 
     def register(self, email='test@hepitrack.com', password='test123456'):
         return self._client.post(
             '/auth/register',
-            data=json.dumps(dict(email='test@hepitrack.com', password='test123456')),
+            data=json.dumps(
+                dict(
+                    email='test@hepitrack.com', password='test123456'
+                )
+            ),
             content_type='application/json'
     )
+
+    def verify(self, email='test@hepitrack.com'):
+        db=get_db()
+        db.execute('UPDATE user set verified=1 WHERE email=?', email)
+        db.commit()
 
 @pytest.fixture
 def auth(client):

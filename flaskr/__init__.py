@@ -13,6 +13,9 @@ def create_app(test_config=None):
     # SECRET_KEY
     # NEWS_API_KEY
     # API_KEY
+    # SMTP_SERVER
+    # SMTP_USER
+    # SMTP_PASS
     app.config.from_pyfile(
             os.path.join(app.instance_path, 'settings.cfg')
             )

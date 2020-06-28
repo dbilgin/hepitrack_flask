@@ -105,6 +105,7 @@ def test_verify_email(client, auth, app, verification_token, code):
 ))
 def test_change_password(client, auth, app, old_password, new_password, code):
     register_result=json.loads(auth.register().data)
+    auth.verify()
 
     with app.app_context():
         if not old_password or not new_password:
