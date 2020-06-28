@@ -4,7 +4,7 @@ import json
 import sqlite3
 
 import pytest
-from flaskr import create_app
+from flaskr import create_app, current_app
 from flaskr.db import get_db, init_db
 
 with open(os.path.join(os.path.dirname(__file__), 'data.sql'), 'rb') as f:
@@ -67,7 +67,7 @@ class AuthActions(object):
 
     def verify(self, email='test@hepitrack.com'):
         db=sqlite3.connect(
-            self._client.database,
+            current_app.config['DATABASE'],
             detect_types=sqlite3.PARSE_DECLTYPES
         )
         db.execute('UPDATE user set verified=1 WHERE email=?', email)
