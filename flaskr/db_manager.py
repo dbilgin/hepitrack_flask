@@ -171,9 +171,18 @@ def log_out_user():
 def update_user_pass_by_verify_token(password, token):
     db=get_db()
     db_result=db.execute(
-        'UPDATE user SET password=? WHERE verification_token=?',
+        'UPDATE user SET password=?, verification_token=NULL WHERE verification_token=?',
         (password, token)
     )
     db.commit()
 
     return db_result
+
+def get_email_from_verification(token):
+    db=get_db()
+    email=db.execute(
+        'SELECT email FROM user WHERE verification_token=?',
+        (token,)
+    ).fetchone()
+
+    return email

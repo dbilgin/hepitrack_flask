@@ -62,3 +62,18 @@ def email_reset_password(verification_token):
       'subject': subject,
       'message': message
     }
+
+def email_new_password(new_password):
+    subject='New Password'
+    message="""\
+      <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
+      <div>Your new password is as below:</div>
+      <div>
+        <b>""" + new_password + """</b>
+      </div>
+      <div>Thanks for using Hepitrack!</<div>
+    """
+    return {
+      'subject': subject,
+      'message': message
+    }

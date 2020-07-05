@@ -21,12 +21,14 @@ from flaskr.db_manager import (
   delete_user,
   log_out_user,
   update_user_pass_by_verify_token,
-  update_verification_token_by_email
+  update_verification_token_by_email,
+  get_email_from_verification
 )
 from flaskr.email import (
     send_email,
     email_verification_data,
-    email_reset_password
+    email_reset_password,
+    email_new_password
 )
 from flask_cors import cross_origin
 from random import randint
@@ -282,10 +284,16 @@ def reset_password():
     except:
         abort(400)
 
-    new_password=randint(10**(6-1), (10**6)-1)
-    db_result=update_user_pass_by_verify_token(new_password, verification_token)
+    user_email=get_email_from_verification(verification_token)['email']
+
+    if not user_email:
+        abort(401)
+
+    new_password=str(randint(10**(6-1), (10**6)-1))
+    db_result=update_user_pass_by_verify_token(generate_password_hash(new_password), verification_token)
 
     if db_result.rowcount > 0:
+        send_email(user_email, email_new_password(new_password))
         return ('', 204)
     else:
         abort(401)
