@@ -44,6 +44,8 @@ def create_app(test_config=None):
     app.register_blueprint(news.bp)
     from . import user
     app.register_blueprint(user.bp)
+    from . import track
+    app.register_blueprint(track.bp)
 
     CORS(app, resources={r'/*': {'origins': 'https://www.hepitrack.com'}})
     return app

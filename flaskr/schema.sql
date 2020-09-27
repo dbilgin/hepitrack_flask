@@ -1,5 +1,8 @@
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS news;
+DROP TABLE IF EXISTS track;
+DROP TABLE IF EXISTS food_track;
+DROP TABLE IF EXISTS symptom_track;
 
 CREATE TABLE user (
 	id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,4 +23,26 @@ CREATE TABLE news (
 	url TEXT NOT NULL,
 	image TEXT,
 	publish_date TEXT NOT NULL
+);
+
+CREATE TABLE track (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	user_id INTEGER,
+  water_count INTEGER,
+	date TEXT NOT NULL
+);
+
+CREATE TABLE food_track (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id INTEGER,
+  name TEXT,
+  description TEXT
+);
+
+CREATE TABLE symptom_track (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+  track_id INTEGER,
+  symptom INTEGER,
+  body_parts TEXT,
+  intensity INTEGER
 );

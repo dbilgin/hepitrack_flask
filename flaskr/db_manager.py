@@ -186,3 +186,75 @@ def get_email_from_verification(token):
     ).fetchone()
 
     return email
+
+def get_all_tracks():
+    db=get_db()
+    tracks=db.execute(
+        'SELECT id, water_count, date FROM track WHERE user_id=?',
+        (g.user['id'],)
+    ).fetchall()
+
+    return tracks
+
+def get_all_food_tracks(track_id):
+    db=get_db()
+    food_tracks=db.execute(
+        'SELECT id, name, description FROM food_track WHERE track_id=?',
+        (track_id,)
+    ).fetchall()
+
+    return food_tracks
+
+def get_all_symptom_tracks(track_id):
+    db=get_db()
+    symptom_tracks=db.execute(
+        'SELECT id, symptom, body_parts, intensity FROM symptom_track WHERE track_id=?',
+        (track_id,)
+    ).fetchall()
+
+    return symptom_tracks
+
+def insert_symptoms(symptoms, track_id):
+    db=get_db()
+    for symptom in symptoms:
+        db.execute(
+            'INSERT INTO symptom_track'
+            + ' (track_id, symptom, body_parts, intensity)'
+            + 'VALUES (?, ?, ?, ?)',
+            (
+                track_id,
+                symptom['symptom'],
+                symptom['body_parts'],
+                symptom['intensity']
+            )
+        )
+        db.commit()
+
+def insert_food(food_tracks, track_id):
+    db=get_db()
+    for food in food_tracks:
+        db.execute(
+            'INSERT INTO food_track'
+            + ' (track_id, name, description)'
+            + 'VALUES (?, ?, ?)',
+            (
+                track_id,
+                food['name'],
+                food['description']
+            )
+        )
+        db.commit()
+
+
+def insert_track(water_count, symptoms, food_tracks, date_time):
+    db=get_db()
+    track=db.execute(
+        'INSERT INTO track (user_id, water_count, date)'
+        + 'VALUES (?, ?, ?)',
+        (g.user['id'], water_count, date_time)
+    )
+    db.commit()
+    track_id = track.lastrowid
+
+    insert_symptoms(symptoms, track_id)
+    insert_food(food_tracks, track_id)

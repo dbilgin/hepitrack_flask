@@ -28,7 +28,6 @@ def test_login_validate_input(client, user_email, user_password, code):
         '/auth/register',
         data=json.dumps(dict(email=user_email, password=user_password)),
         content_type='application/json'
-
     )
     assert code==response.status_code
 
