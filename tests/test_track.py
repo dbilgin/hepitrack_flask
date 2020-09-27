@@ -16,6 +16,13 @@ import json
         '2020-09-27T14:33:57.138814',
         204
     ),
+    (
+        1,
+        "[{'symptom': 3,'body_parts': '4,5', 'intensity':4}]",
+        "[{'name': 'test', 'description': 'test'}]",
+        '2020-09-27T14:33:57.138814',
+        400
+    ),
 ))
 def test_save_track(
     client,

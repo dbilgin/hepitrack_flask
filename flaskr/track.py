@@ -16,13 +16,8 @@ def save():
     if not content:
         abort(400)
     try:
-        try:
-            symptoms=json.loads(content['symptoms'])
-            food_tracks=json.loads(content['food_tracks'])
-        except:
-            symptoms=content['symptoms']
-            food_tracks=content['food_tracks']
-
+        symptoms=content['symptoms']
+        food_tracks=content['food_tracks']
         water_count=content['water_count']
         date_time=content['date_time']
 
