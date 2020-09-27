@@ -46,3 +46,21 @@ def test_save_track(
             }
         )
         assert track_response.status_code==code
+
+def test_get_tracks(
+    client,
+    auth,
+    app
+):
+    register_result=json.loads(auth.register().data)
+
+    with app.app_context():
+        track_response=client.get(
+            '/track/all',
+            headers={
+                'Content-Type': 'application/json',
+                'Authorization': 'token ' + register_result['access_token']
+            }
+        )
+
+        assert track_response.status_code==200
