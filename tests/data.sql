@@ -15,4 +15,4 @@ VALUES
 
 INSERT INTO news (source, author, title, description, url, image, publish_date)
 VALUES
-  ('Hepitrack', 'dbilgin', 'Test', 'Description', 'www.hepitrack.com', 'image.jpg', '2020-05-07T20:11:41Z');
+  ('Hepitrack', 'dbilgin', 'Test', 'Description', 'hepitrack.web.app', 'image.jpg', '2020-05-07T20:11:41Z');

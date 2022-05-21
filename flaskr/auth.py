@@ -141,7 +141,7 @@ def login():
         return jsonify(access_token=token,verified=user['verified'])
 
 @bp.route('/verify_email', methods=['POST'])
-@cross_origin(['https://www.hepitrack.com'])
+@cross_origin(['https://hepitrack.web.app'])
 def verify_email():
     content=request.get_json()
     if not content:

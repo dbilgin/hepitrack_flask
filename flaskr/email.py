@@ -36,10 +36,10 @@ def send_email(email, data):
 def email_verification_data(verification_token):
     subject='Email Verification'
     message="""\
-      <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
+      <img style="width: 60px; height: 60px;" src="https://hepitrack.web.app/images/logo.png"/>
       <div>You can verify your email address following the link below:</div>
       <div>
-        <a href="https://www.hepitrack.com/verify-email.html?code=""" + verification_token + """">https://www.hepitrack.com/verify-email.html?code=""" + verification_token + """</a>
+        <a href="https://hepitrack.web.app/verify-email.html?code=""" + verification_token + """">https://hepitrack.web.app/verify-email.html?code=""" + verification_token + """</a>
       </div>
       <div>Thanks for registering with Hepitrack!</<div>
     """
@@ -51,10 +51,10 @@ def email_verification_data(verification_token):
 def email_reset_password(verification_token):
     subject='Email Verification'
     message="""\
-      <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
+      <img style="width: 60px; height: 60px;" src="https://hepitrack.web.app/images/logo.png"/>
       <div>Click the link below to reset your password:</div>
       <div>
-        <a href="https://www.hepitrack.com/reset-password.html?code=""" + verification_token + """">https://www.hepitrack.com/reset-password.html?code=""" + verification_token + """</a>
+        <a href="https://hepitrack.web.app/reset-password.html?code=""" + verification_token + """">https://hepitrack.web.app/reset-password.html?code=""" + verification_token + """</a>
       </div>
       <div>Thanks for using Hepitrack!</<div>
     """
@@ -66,7 +66,7 @@ def email_reset_password(verification_token):
 def email_new_password(new_password):
     subject='New Password'
     message="""\
-      <img style="width: 60px; height: 60px;" src="https://www.hepitrack.com/images/logo.png"/>
+      <img style="width: 60px; height: 60px;" src="https://hepitrack.web.app/images/logo.png"/>
       <div>Your new password is as below:</div>
       <div>
         <b>""" + new_password + """</b>
